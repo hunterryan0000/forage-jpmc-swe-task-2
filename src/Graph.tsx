@@ -36,6 +36,28 @@ class Graph extends Component<IProps, {}> {
     //step two
     const elem = document.getElementsByTagName('perspective-viewer')[0] as unknown as PerspectiveViewerElement;
 
+    //step three
+    elem.setAttribute('view','y_line');
+    //view is the kind of graph we want to visualize the data with
+    //since we want a continuous line graph we’re using a y_line
+    elem.setAttribute('column-pivots','["stock"]');
+    //c-p is what will allow us to distinguish stock ABC from DEF
+    //We use ‘[“stock”]’ as its value here.
+    elem.setAttribute('row-pivots','["timestamp"]');
+    //‘row-pivots’ takes care of our x-axis
+    //This allows us to map each datapoint based on its timestamp.
+    elem.setAttribute('columns','["top_ask_price"]');
+    //‘columns’ allows us to focus on a particular part of a stock’s data along y-axis.
+    // For this instance we only care about top_ask_price
+    elem.setAttribute('aggregates',`{"stock":"distinct count", ' +
+        '"top_ask_price":"avg", "top_bid_price":"avg", "timestamp":"distinct count"}`);
+    //‘aggregates’ allows us to handle the duplicated data we observed earlier and
+    // consolidate it into a single data point. In our case we only want to consider a
+    // data point unique if it has a unique stock name and timestamp. If there are
+    // duplicates like what we had before, we want to average out the top_bid_prices
+    // and the top_ask_prices of these ‘similar’ data points before treating them as
+    // one.
+
     const schema = {
       stock: 'string',
       top_ask_price: 'float',
